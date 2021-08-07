@@ -453,3 +453,78 @@ function sortedArrayToBST(nums) {
 
 // 平衡二叉树：
 // 概念与产生原因：
+// 平衡二叉树的出现，是为了降低二叉搜索树的查找时间复杂度
+// 平衡二叉树比非平衡二叉树（图上的结构可以称为链式二叉树）的查找效率更高
+// 二叉搜索树的妙处就在于它把“二分”这种思想以数据结构的形式表达了出来
+// 如果一个二叉搜索树严重不平衡，每一个结点的右子树都是空的，这样的结构非常不合理，它会带来高达O(N)的时间复杂度
+// 而平衡二叉树由于利用了二分思想，查找操作的时间复杂度仅为 O(logN)
+
+
+// 平衡二叉树的判定
+// 题目描述：给定一个二叉树，判断它是否是高度平衡的二叉树。
+
+// 抓住其中的两个关键字：
+
+// 1. 任意结点
+// 2. 左右子树高度差绝对值都不大于1
+
+function isBalanced(root) {
+    let flag = true
+    function dfs(root) {
+        if (!root) {
+            return 0
+        }
+        const leftHeight = dfs(root.left)
+        const rightHeight = dfs(root.right)
+        if (Math.abs(leftHeight - rightHeight) > 1) {
+            flag = false
+            return
+        }
+        return Math.max(leftHeight, rightHeight) + 1
+    }
+    dfs(root)
+    return flag
+}
+
+
+// 平衡二叉树的构造
+// 题目描述：给你一棵二叉搜索树，请你返回一棵平衡后的二叉搜索树，新生成的树应该与原来的树有着相同的节点值。
+// 输入：root = [1,null,2,null,3,null,4,null,null]
+// 输出：[2,1,3,null,null,null,4]
+
+// 构造平衡二叉树 =》 有序数组生成平衡二叉树
+
+// 二叉搜索树的中序遍历序列是有序的！所谓有序数组，完全可以理解为二叉搜索树的中序遍历序列啊，对不对？现在树都给到咱们手里了，求它的中序遍历序列是不是非常 easy？如果能把中序遍历序列求出来，这道题是不是就跟之前做过那道是一模一样的解法了？
+// 没错，这道题的解题思路正是：
+
+// 1. 中序遍历求出有序数组
+// 2. 逐个将二分出来的数组子序列“提”起来变成二叉搜索树
+function balanceBST(root) {
+    const res = []
+    // 递归中序遍历二叉搜索树，得到一个有序数组res
+    function inOrder(root) {
+        if (!root) {
+            return
+        }
+        inOrder(root.left)
+        res.push(root.val)
+        inOrder(root.right)
+    }
+    // 递归函数处理res有序数组
+    function buildAVL(low, high) {
+        if (low > high) {
+            return null
+        }
+        const mid = Math.floor((high - low) / 2) + low
+        const cur = new TreeNode(res[mid])
+        cur.left  = buildAVL(low, mid - 1)
+        cur.right = buildAVL(mid + 1, high)
+        return cur
+    }
+    // 递归中序遍历二叉树，生成res有序数组
+    inOrder(root)
+    if (!res.length) {
+        return null
+    }
+    return buildAVL(0, res.length - 1)
+}
