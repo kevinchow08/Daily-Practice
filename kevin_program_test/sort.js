@@ -146,3 +146,55 @@ function insertSort(arr) {
     }
     return arr
 }
+
+// 快速排序
+// 核心思想：随意设定一个基准值K，将基准值K挪到合适得位置，使得比K小的元素都在K左边，比K大的元素都在K右边。时间复杂度O(n)
+
+// 具体步骤：
+// 1，设置k=a[0],再设置两个指针（i, j），指向数组首位元素。
+//    先判断j指针所指得元素与k比较，若大于k则，j指针左移动（j--）若小于等于k，则将k与a[j]交换。 即：a[i]与a[j]交换
+//    上述交换之后，再判断i指针所指得元素与k比较，若小于k，则i指针右移（i++）若大于等于k，则将k与a[i]交换。即：a[j]与a[i]交换
+//    最后，i，j指针对撞，同时指向k元素。此时k左侧得元素小于k，k右侧得元素大于k。
+
+// 2，把k左边得部分进行1步骤
+// 3，把k右边得部分进行1步骤
+
+// 有点难
+function quickSort(arr) {
+    partition(arr, 0, arr.length - 1)
+    function partition(arr, start, end) {
+        if (start >= end)  {
+            return
+        }
+        // 设置k=a[0],再设置两个指针 i, j，指向数组首位元素
+        const k = arr[start]
+        let i = start
+        let j = end
+        while (i !== j) {
+            // 先判断右指针与K值的大小比较
+            while (i < j && arr[j] >= k) {
+                j--
+            }
+            // 此时i指向的元素为K
+            swap(arr, i, j)
+            // 再判断左指针与k值的大小比较
+            while (i < j && arr[i] <= k) {
+                i++
+            }
+            // 此时j指向的元素为K
+            swap(arr, i, j)
+        }
+        // 打破循环判断之后，i和j共同指向基准值K。并且，k左侧子序列逗不大于K，右侧子序列逗不小于K
+        // 递归继续执行k左右子序列的上述操作
+        partition(arr, start, i - 1)
+        partition(arr, i + 1, end)
+    }
+    function swap(arr, i, j) {
+        const temp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = temp
+    }
+    return arr
+}
+quickSort([5, 1, 3, 6, 2, 0, 7])
+
