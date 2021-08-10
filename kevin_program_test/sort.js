@@ -146,6 +146,8 @@ function insertSort(arr) {
     }
     return arr
 }
+// 归并排序
+
 
 // 快速排序
 // 核心思想：随意设定一个基准值K，将基准值K挪到合适得位置，使得比K小的元素都在K左边，比K大的元素都在K右边。时间复杂度O(n)
@@ -197,4 +199,42 @@ function quickSort(arr) {
     return arr
 }
 quickSort([5, 1, 3, 6, 2, 0, 7])
+
+
+function mergeSort(arr) {
+    const len = arr.length
+    if (len <= 1) {
+        return arr
+    }
+    // 直接用数组长度来分割
+    const mid = Math.floor( len / 2)
+    const left = mergeSort(arr.slice(0, mid))
+    const right = mergeSort(arr.slice(mid, len))
+    arr = mergeArr(left, right)
+    return arr
+    // 合并两个有序数组
+    function mergeArr(arr1, arr2) {
+        let res = []
+        let i = 0
+        let j = 0
+        while (i < arr1.length && j < arr2.length) {
+            if (arr1[i] < arr2[j]) {
+                res.push(arr1[i])
+                i++
+            } else {
+                res.push(arr2[j])
+                j++
+            }
+        }
+        // 如果arr1有剩余,则将剩余的子序列拼接
+        if (i < arr1.length) {
+            return res.concat(arr1.slice(i))
+        } else {
+        // 如果arr2有剩余
+        // 注意：concat不会改变数组本身，返回值才是合并后的结果
+            return res.concat(arr2.slice(j))
+        }
+    }
+}
+mergeSort([5, 1, 3, 6, 2, 0, 7])
 
