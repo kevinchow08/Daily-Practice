@@ -138,6 +138,7 @@ function minCostClimbingStairs(cost) {
 // 问总共有多少条不同的路径?
 
 function solution(m, n) {
+    // 初始化一个二维数组
     const dp = new Array(m).fill().map(item => Array(n))
     // 初始化: 第0行，第0列上的每个单元格的路径都是唯一的
     for (let i = 0; i < m; i++) {
@@ -154,3 +155,86 @@ function solution(m, n) {
     }
     return dp[m - 1][n - 1]
 }
+
+// 63. 不同路径 II（有障碍物）
+// 一个机器人位于一个 m x n 网格的左上⻆ (起始点在下图中标记为“Start” )。
+// 机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下⻆(在下图中标记为“Finish”)。
+// 现在考虑网格中有障碍物。那么从左上⻆到右下⻆将会有多少条不同的路径?
+
+// 网格中的障碍物和空位置分别用 1 和 0 来表示。
+// 输入:obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]
+// 输出:2
+
+// 有了障碍，(i, j)如果就是障碍的话应该就保持初始状态(初始状态为0)
+function uniquePathsWithObstacles(obstacleGrid) {
+    const n = obstacleGrid.length
+    const m = obstacleGrid[0].length
+    const dp = new Array(m).fill().map(item => new Array(n))
+    // 初始化
+    for (let i = 0; i < m; i++) {
+        dp[i][0] = obstacleGrid[i][0] === 0 ? 1 : 0
+    }
+    for (let j = 0; j < n; j++) {
+        obstacleGrid[0][j] === 0 ? dp[0][j] = 1 : dp[0][j] = 0
+    }
+    for (let i = 1; i < m; i++) {
+        for (let j = 1; j < n; j++) {
+            dp[i][j] = obstacleGrid[i][j] === 0 ? dp[i - 1][j] + dp[i][j - 1] : 0
+        }
+    }
+    return dp[m - 1][n - 1]
+}
+
+
+// 343. 整数拆分
+// 给定一个正整数 n，将其拆分为至少两个正整数的和，并使这些整数的乘积最大化。 返回你可以获得的最大乘积。
+
+// 示例 1:
+
+// 输入: 2
+// 输出: 1
+// 解释: 2 = 1 + 1, 1 × 1 = 1。
+
+// 示例 2:
+
+// 输入: 10
+// 输出: 36
+// 解释: 10 = 3 + 3 + 4, 3 × 3 × 4 = 36。
+
+// 思路：整数拆分，重点在如何拆分
+// 设dp[i]: i 为被拆分的整数, dp[i]被拆分整数的最大乘积。
+
+// 当 i ≥ 2 时，假设对正整数 i 拆分出的第一个正整数是 j（ 1≤ j< i），则有以下两种方案
+// 将 i 拆分成 j 和 i−j 的和，且 i−j 不再拆分成多个正整数，此时的乘积是 j × (i−j)；
+// 将 i 拆分成 j 和 i−j 的和，且 i−j 继续拆分成多个正整数，此时的乘积是 j ×dp[i−j]。
+
+// 初始化：dp[2] = 2.dp[0],dp[1]没有意义
+function integerBreak(n) {
+    const dp = []
+    dp[1] = dp[0] = 0
+    dp[2] = 2
+    // i 为被拆分的整数
+    for (let i = 3; i <= n; i++) {
+        for (let j = 1; j <= i - 1; j++) {
+            // j固定时的最大值
+            const maxV = Math.max(j * (i - j), j * dp[i - j])
+            // maxV与j为其他值时的最大值进行比对
+            dp[i] = !dp[i] ? maxV : Math.max(dp[i], maxV)
+        }
+    }
+    return dp[n]
+}
+
+// 96.不同的二叉搜索树
+// 给你一个整数 n ，求恰由 n 个节点组成且节点值从 1 到 n 互不相同的 二叉搜索树 有多少种？返回满足题意的二叉搜索树的种数。
+var numTrees = function(n) {
+    const dp = []
+    dp[0] = dp[1] = 1
+    dp[2] = 2
+    for (let i = 3; i <= n; i++) {
+        for (let j = 1; j <= i; j++) {
+            !dp[i] ? dp[i] = dp[i - j] * dp[j - 1] : dp[i] += dp[i - j] * dp[j - 1]
+        }
+    }
+    return dp[n]
+};
