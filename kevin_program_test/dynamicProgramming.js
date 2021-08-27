@@ -1,3 +1,4 @@
+// 动态规划的入门
 // 从“爬楼梯”问题说起
 
 // > 题目描述：假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
@@ -169,6 +170,8 @@ function solution(m, n) {
 function uniquePathsWithObstacles(obstacleGrid) {
     const n = obstacleGrid.length
     const m = obstacleGrid[0].length
+    // 初始化二维数组
+    // fill()作用长度为m的数组的元素为undefined
     const dp = new Array(m).fill().map(item => new Array(n))
     // 初始化
     for (let i = 0; i < m; i++) {
