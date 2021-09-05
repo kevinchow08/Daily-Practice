@@ -1,5 +1,5 @@
-// 背包标准问题：有N件物品和一个最多能被重量为W 的背包。第i件物品的重量是weight[i]，得到的价值是value[i] 。
-// 每 件物品只能用一次，求解将哪些物品装入背包里物品价值总和最大。
+// 背包标准问题：有N件物品和一个最多能背重量为 W 的背包。第i件物品的重量是weight[i]，得到的价值是value[i] 。
+// 每件物品只能用一次，求解将哪些物品装入背包里物品价值总和最大。
 
 // 二维dp数组01背包
 
@@ -32,7 +32,7 @@ const value = [15, 20, 30]
 const bagWeight = 4
 
 const bag_problem1 = (weight, value, bagWeight) => {
-    // 初始化一个二维dp数组
+    // 初始化一个二维dp数组（i*j）
     const dp = new Array(weight.length).fill().map(item => new Array(bagWeight))
 
     // dp数组的初始化，i = 0的情况
@@ -67,3 +67,41 @@ const bag_problem1 = (weight, value, bagWeight) => {
 
 // 再思考一维数组的背包问题解法：
 
+// 可以发现如果把dp[i - 1]那一层拷⻉到dp[i]上，表达式完全可以是:dp[i][j] = max(dp[i][j], dp[i][j - weight[i]] + value[i])
+// 于其把dp[i - 1]这一层拷⻉到dp[i]上，不如只用一个一维数组了，只用dp[j](一维数组，也可以理解是 一个滚动数组)
+
+// 所以定义：dp[j]表示：容量为j的背包，所背的物品价值可以最大为dp[j]
+
+// 递推公式：dp[j] = max(dp[j], dp[j - weight[i]] + value[i])
+// 背包重量为j的dp最大值实际上等于，第i-1种物品的最大值dp[j],和第i-1种物品的最大值dp[j - weight[i]]加上i的物品价值value[i]相比较而得出
+// 可以看出相对于二维dp数组的写法，就是把dp[i][j]中i的维度去掉了。
+
+// 一维dp数组如何初始化：
+// dp[j]全部初始化0即可。首先dp[0] = 0，毋庸置疑。dp数组j不为0时，背包的的最大价值一定为正整数，所以先初始化0
+
+// 遍历顺序，i从0到weight.lenght - 1正序遍历。j从bagWeight到weight[i]倒叙遍历。
+// 如果j < weight[i],dp[j]不需要重新赋值，它就等于上一次i - 1时的dp[j]
+
+// 为何j要倒叙遍历：防止物品i被放入多次。倒叙遍历会避开这个问题。
+// 动手推导下dp数组的情况，便可看出正序遍历j是有问题的
+
+// 推导dp数组
+// i为0，dp = [0, 15, 15, 15, 15]
+// i为1，dp = [0, 15, 15, 20, 30]
+// i为2，dp = [0, 15, 15, 15, 15]
+
+// 说白了就是通过遍历i，来不断更新长度为j的dp数组
+// 所以时间复杂度是一样的O(n^2)，但空间复杂度降了一个纬度，又二维数组降为一维数组。
+
+// 代码实现：
+const bag_problem2 = (weight, value, bagWeight) => {
+    // 初始化一个一维数组，长度为j
+    const dp = new Array(bagWeight + 1).fill(0)
+
+    for (let i = 0; i < weight.length; i++) {
+        for (let j = bagWeight; j >= weight[i]; j--) {
+            dp[j] = Math.max(dp[j], dp[j - weight[i]] + value[i])
+        }
+    }
+    return dp[bagWeight]
+}
