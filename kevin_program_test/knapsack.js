@@ -80,7 +80,7 @@ const bag_problem1 = (weight, value, bagWeight) => {
 // dp[j]全部初始化0即可。首先dp[0] = 0，毋庸置疑。dp数组j不为0时，背包的的最大价值一定为正整数，所以先初始化0
 
 // 遍历顺序，i从0到weight.lenght - 1正序遍历。j从bagWeight到weight[i]倒叙遍历。
-// 如果j < weight[i],dp[j]不需要重新赋值，它就等于上一次i - 1时的dp[j]
+// 如果j < weight[i],背包装不下。dp[j]不需要重新赋值，它就等于上一次i - 1时的dp[j]
 
 // 为何j要倒叙遍历：防止物品i被放入多次。倒叙遍历会避开这个问题。
 // 动手推导下dp数组的情况，便可看出正序遍历j是有问题的
@@ -104,4 +104,55 @@ const bag_problem2 = (weight, value, bagWeight) => {
         }
     }
     return dp[bagWeight]
+}
+
+// 分割等和子集
+// 给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相
+// 等。
+// 注意: 每个数组中的元素不会超过 100 数组的大小不会超过 200
+// 示例 1:
+// 输入: [1, 5, 11, 5]
+// 输出: true
+// 解释: 数组可以分割成 [1, 5, 5] 和 [11].
+
+
+// 思路： 只要找到集合里能够出现 sum / 2 的子集总和，就算是可以分割成两个相同元素和子集了
+
+// 转换为背包问题：
+// 背包的体积为sum / 2
+// 背包要放入的商品(集合里的元素)重量为 元素的数值，价值也为元素的数值
+// 背包如何正好装满，说明找到了总和为 sum / 2 的子集。
+// 背包中每一个元素是不可重复放入。
+// 当dp[sum/2] = sum / 2时，则找到总和为sum / 2 的子集
+
+
+// eg：dp[6]表示背包重量为6，假设：装入的物品为weight = [1,2].value = [1,2].可以装入，但最大价值不到6。
+// 所以不满足dp[target] = target的条件
+
+// 编码：
+const canPartition = (nums) => {
+    // 先求和
+    let sum = 0
+    for (let i = 0; i < nums.length; i++) {
+        sum += nums[i]
+    }
+    if (sum % 2 !== 0) {
+        return false
+    }
+    const target = sum / 2
+
+    // 初始化一个dp数组，长度为target+1
+    const dp = new Array(target + 1).fill(0)
+
+    // 循环遍历，不断更新dp数组
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = target; j >= nums[i]; j--) {
+            dp[j] = Math.max(dp[j], dp[j - nums[i]] + nums[i])
+        }
+    }
+    if (dp[target] === target) {
+        return true
+    } else {
+        return false
+    }
 }
