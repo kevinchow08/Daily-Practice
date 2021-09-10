@@ -127,15 +127,26 @@ const bag_problem2 = (weight, value, bagWeight) => {
 
 
 // eg：dp[6]表示背包重量为6，假设：装入的物品为weight = [1,2].value = [1,2].可以装入，但最大价值不到6。
-// 所以不满足dp[target] = target的条件
+// 所以不满足dp[target] = target的条件，即，子集之总和不为sum / 2
 
 // 编码：
-const canPartition = (nums) => {
-    // 先求和
+
+// 先写一个求和函数：
+const sumResult = (nums) => {
     let sum = 0
     for (let i = 0; i < nums.length; i++) {
         sum += nums[i]
     }
+    return sum
+}
+
+const canPartition = (nums) => {
+    // 先求和
+    // let sum = 0
+    // for (let i = 0; i < nums.length; i++) {
+    //     sum += nums[i]
+    // }
+    const sum = sumResult(nums)
     if (sum % 2 !== 0) {
         return false
     }
@@ -156,3 +167,115 @@ const canPartition = (nums) => {
         return false
     }
 }
+
+// 1049. 最后一块石头的重量 II
+// 有一堆石头，每块石头的重量都是正整数。
+// 每一回合，从中选出任意两块石头，然后将它们一起粉碎。假设石头的重量分别为 x 和 y，且 x <= y。 那么粉碎的可能结果如下:
+//
+//     如果 x == y，那么两块石头都会被完全粉碎;
+// 如果 x != y，那么重量为 x 的石头将会完全粉碎，而重量为 y 的石头新重量为 y-x。 最后，最多只会剩下一块石头。返回此石头最小的可能重量。如果没有石头剩下，就返回 0。
+// 示例:
+//     输入:[2,7,4,1,8,1]
+// 输出:1
+// 解释:
+//     组合 2 和 4，得到 2，所以数组转化为 [2,7,1,8,1]，
+// 组合 7 和 8，得到 1，所以数组转化为 [2,1,1,1]，
+// 组合 2 和 1，得到 1，所以数组转化为 [1,1,1]，
+// 组合 1 和 1，得到 0，所以数组转化为 [1]，这就是最优值。
+// 提示:
+//     1 <= stones.length <= 30 1 <= stones[i] <= 1000
+
+
+// 思路：本题其实就是尽量让石头分成重量相同的两堆，相撞之后剩下的石头最小
+// 与分割等和子集非常类似
+// 本题物品的重量为store[i]，物品的价值也为store[i]。对应着01背包里的物品重量weight[i]和 物品价值value[i]
+
+// 所以，本质上：寻找两个子集，使得两子集和之差最小，求此最小值。
+
+// 设其中一个子集之和为dp[target],则另一个子集之和为sum - dp[target]
+// dp[target]是容量为target的背包所能背的最大重量
+// 在计算target的时候，target = sum / 2 因为是向下取整，所以sum - dp[target] 一定是大于等于 dp[target]的。
+// 相撞之后, 输出结果则为：sum - dp[target] - dp[target]
+
+// 编码：
+const lastStoneWeightII = (stones) => {
+    // 先求和
+    // let sum = 0
+    // const stoneLength = stones.length
+    // for (let i = 0; i < stoneLength; i++) {
+    //     sum += stones[i]
+    // }
+    const sum = sumResult(stones)
+
+    const target = Math.floor(sum / 2)
+
+    // 转换为背包问题，求dp[target]
+    // weight数组为stones数组
+    // value数组为stones数组
+    // dp定义：容量为target的背包所能背的最大重量/最大价值
+    // 初始化一个length为target + 1的一维数组,填充元素0
+    const dp = new Array(target + 1).fill(0)
+
+    // 遍历更新dp数组
+    for (let i = 0; i < stones.length; i++) {
+        for (let j = target; j >= stones[i]; j--) {
+            dp[j] = Math.max(dp[j], dp[j - stones[i]] + stones[i])
+        }
+    }
+    return sum - dp[target] - dp[target]
+}
+
+// 给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意 一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
+// 返回可以使最终数组和为目标数 S 的所有添加符号的方法数。 示例:
+// 输入:nums: [1, 1, 1, 1, 1], S: 3 输出:5
+// 解释:
+// -1+1+1+1+1 = 3 +1-1+1+1+1 = 3 +1+1-1+1+1 = 3 +1+1+1-1+1 = 3 +1+1+1+1-1 = 3
+// 一共有5种方法让最终目标和为3。
+
+
+// 思路：
+// 重点，背包问题的转换
+// 假设所有符号为+的元素和为x，符号为-的元素和的绝对值是y
+// 实际上就是将nums分为两个子集：一个为正整数子集，一个为负整数子集
+// left - right = target
+// left + right = sum
+// 2left = target + sum => left = (target + sum) / 2
+// 实际问题转换为：找出一个子集left，其总和为(target + sum) / 2，可以找出多少组？？
+// 该问题与分割等和子集还是有小区别，分割等和子集是只要找出 和为sum / 2 的子集即可输出为true。
+// 该问题，需要找出组数
+
+// 设dp[j]: 背包容量为j,可放入物品在nums[]中选择,有dp[j]种方法。
+
+// 对于dp[j]分析：放nums[i]时，dp[j] = dp[j - nums[i]] . 不放nums[i]时，dp[j]等于i - 1次的dp[j]
+// 两种组合情况数相加可得如下：
+// 状态转移方程：dp[j] = dp[j] + dp[j - nums[i]]
+
+// 初始化：填满容量为0的背包有且只有一种方法，所以dp[0] = 1
+
+// 编码：
+const findTargetSumWays = function(nums, target) {
+    // 先求和
+    const sum = sumResult(nums)
+    // 边界条件处理
+    if ((target + sum) % 2 !== 0 || target > sum) {
+        return 0
+    }
+    const backTarget = (target + sum) / 2
+
+    // 边界条件处理
+    if (backTarget < 0) {
+        return 0
+    }
+
+    // 初始化dp数组
+    const dp = new Array(backTarget + 1).fill(0)
+    dp[0] = 1
+
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = backTarget; j >= nums[i]; j--) {
+            dp[j] += dp[j - nums[i]]
+        }
+    }
+    return dp[backTarget]
+};
+
