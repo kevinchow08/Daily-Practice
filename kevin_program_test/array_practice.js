@@ -1,3 +1,55 @@
+// 二分查找：只能查找已经排序好的数据，每一次查找都可以将查找范围减半，查找范围内只剩一个数据时查找结束。
+
+// 声明一个函数，参数为：要查找的数组，要查找的数据，数组的起点，数组的末尾
+// 找到数组的中间值，将其与目标值进行比较
+// 如果中间值大于目标值，可知目标值在中间值的左侧，则对其左边的数据执行上述操作
+// 如果中间值小于目标值，可知目标值在中间值的右侧，则对其右边的数据执行上述操作
+// 直至中间值等于目标值，则结束上述操作，返回中间值的位置。
+
+const binarySearch = function (nums, target) {
+    // 设置初始下标
+    let start = 0
+    let end = nums.length - 1
+    // 循环条件
+    // 循环过程中不断调整start，end索引值
+    while (start <= end) {
+        let middle = start + Math.floor((end - start) / 2)
+        if (target > nums[middle]) {
+            start = middle + 1
+        } else if (target < nums[middle]) {
+            end = middle - 1
+        } else {
+            return middle
+        }
+    }
+    // 找不到的情况下，返回-1
+    return -1
+}
+
+// 0～n-1中缺失的数字
+// 一个长度为n-1的递增排序数组中的所有数字都是唯一的，并且每个数字都在范围0～n-1之内。
+// 在范围0～n-1内的n个数字中有且只有一个数字不在该数组中，请找出这个数字。
+
+// 操作过程：
+// 此处因为是从0开始的，所以只要其中间值是对应的下标值，则可证明前半部分没有错，左边界移动到当前中间值位置；反之亦然。
+// 最后左边界就是缺的值的位置，也就是缺的值
+// (因为end会多减去1在最后一步执行else后，为了跳出循环，所以就返回start了)
+
+// 不理解的话，自行在纸上画一画
+const missingNumber = function (nums) {
+    let start = 0
+    let end = nums.length - 1
+    while (start <= end) {
+        let mid = start + Math.floor((end - start) / 2)
+        if (nums[mid] === mid) {
+            start = mid + 1
+        } else {
+            end = mid - 1
+        }
+    }
+    return start
+}
+
 // 两数求和：
 // > 真题描述： 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
 //

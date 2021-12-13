@@ -258,3 +258,25 @@ const detectCycle = function (head) {
     }
     return null
 }
+
+// 复杂链表的复制
+// 请实现 copyRandomList 函数，复制一个复杂链表。
+// 在复杂链表中，每个节点除了有一个 next 指针指向下一个节点.
+// 还有一个 random 指针指向链表中的任意节点或者 null
+
+// key: 递归 + Map存储
+const cacheMap = new Map()
+const copyRandomList = function (head) {
+    if (head === null) {
+        return null
+    }
+    if (!cacheMap.has(head)) {
+        // 复制head节点
+        const newNode = new Node(head.val, null, null)
+        // 将head节点和新节点，存入map中。
+        cacheMap.set(head, newNode)
+        newNode.next = copyRandomList(head.next)
+        newNode.random = copyRandomList(head.random)
+    }
+    return cacheMap.get(head)
+}
