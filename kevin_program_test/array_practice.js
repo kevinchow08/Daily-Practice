@@ -1,3 +1,15 @@
+// 改变数组本身的api
+pop()  // 尾部弹出一个元素
+push() // 尾部插入一个元素
+shift()  // 头部弹出一个元素
+unshift()  // 头部插入一个元素
+sort([func]) // 对数组进行排序,func有2各参数，其返回值小于0，那么参数1被排列到参数2之前，反之参数2排在参数1之前
+reverse() // 原位反转数组中的元素
+splice(pos,deleteCount,...item)  // 返回修改后的数组，从pos开始删除deleteCount个元素，并在当前位置插入items
+copyWithin(pos, start, end) // 复制从start到end(不包括end)的元素，到pos开始的索引，返回改变后的数组，浅拷贝
+arr.fill(value, start, end) // 从start到end默认到数组最后一个位置，不包括end，填充val，返回填充后的数组
+
+
 // 二分查找：只能查找已经排序好的数据，每一次查找都可以将查找范围减半，查找范围内只剩一个数据时查找结束。
 
 // 声明一个函数，参数为：要查找的数组，要查找的数据，数组的起点，数组的末尾
@@ -153,4 +165,73 @@ const merge = function (nums1, m, nums2, n) {
         j--
     }
     return nums1
+}
+
+// 二维数组中的查找
+// 在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。
+// 请完成一个高效的函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+
+// 由于给定的二维数组具备每行从左到右递增以及每列从上到下递增的特点，当访问到一个元素时，可以排除数组中的部分元素。
+//
+// 从二维数组的右上角开始查找。如果当前元素等于目标值，则返回 true。
+// 如果当前元素大于目标值，则移到左边一列。如果当前元素小于目标值，则移到下边一行。
+
+const findNumberIn2DArray = function(matrix, target) {
+    // 拿到matrix的rows和columns
+    const rows = matrix.length
+    const columns = matrix[0].length
+    if (!matrix || rows === 0 || columns === 0) {
+        return false
+    }
+    let row = 0
+    let column = columns - 1
+    while (row < rows && column >= 0) {
+        let value = matrix[row][column]
+        if (value > target) {
+            column--
+        } else if (value < target) {
+            row++
+        } else {
+            return true
+        }
+    }
+    return false
+}
+
+// 旋转数组的最小数字
+
+// 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+
+// 给你一个可能存在重复元素值的数组numbers，它原来是一个升序排列的数组，并按上述情形进行了一次旋转。请返回旋转数组的最小元素。
+// 例如，数组[3,4,5,1,2] 为 [1,2,3,4,5] 的一次旋转，该数组的最小值为1
+
+const minArray = function (nums) {
+    let flag = true
+    for (let i = 1; i < nums.length; i++) {
+        if (nums[i] < nums[i - 1]) {
+            flag = false
+            return nums[i]
+        }
+    }
+}
+
+// 剑指 Offer 50. 第一个只出现一次的字符
+// 在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
+
+// 输入：s = "abaccdeff"
+// 输出：'b'
+const firstUniqChar = function(s) {
+    let strMap = new Map()
+    for (let i = 0; i < s.length; i++) {
+        let char = s[i]
+        let value = strMap.get(char)
+        strMap.set(char, !value ? 1 : ++value)
+    }
+    console.log(strMap)
+    for (let [key, value] of strMap) {
+        if (value === 1) {
+            return key
+        }
+    }
+    return ' '
 }

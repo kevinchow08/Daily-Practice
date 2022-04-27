@@ -29,7 +29,7 @@ node1.next = node2
 // 1,2之间添加node3
 const node3 = new ListNode(3)
 // node3节点next指针指向node2
-node3.next = node1.next
+node3.next = node2.next
 // node1节点next指针指向node3
 node1.next = node3
 

@@ -29,6 +29,8 @@ const MyQueue = class {
     }
     pop() {
         if (!this.stack2.length) {
+            // 若队列中没有元素，pop 操作返回 -1
+            if (!this.stack1.length) return -1
             while (this.stack1.length) {
                 const val = this.stack1.pop()
                 this.stack2.push(val)
