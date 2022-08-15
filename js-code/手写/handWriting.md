@@ -1,8 +1,10 @@
 ### 实现string.indexOf
+
+注意：string实例上有indexOf方法，但没有reverse方法
+
 ```js
 function myIndexOf(target, str, fromIndex) {
-    const type = typeof str
-    if (type !== 'string') {
+    if (typeof str !== 'string') {
         str = str.toString()
     }
     if (str.length > target.length || !str) {
@@ -84,7 +86,7 @@ class EventBus {
         this.map[eventName] = (this.map[eventName] || []).concat(handler)
     }
     emit(eventName, data) {
-        this.map[eventName] && this.map[eventName].forEach(handler => {
+        this.map[eventName] && this.map[eventName].forEach(handler => { 
             handler(data)
         })
     }
